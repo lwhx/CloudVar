@@ -1,12 +1,5 @@
 """
-云端变量存储 API 服务
-通过 URL 参数设置或获取变量值
-
-使用方式:
-设置变量: https://your-app.zeabur.app/set?api_key=xxx&bin_name=mybin&key=日期&value=2025-12-05
-获取变量: https://your-app.zeabur.app/get?api_key=xxx&bin_name=mybin&key=日期
-获取全部: https://your-app.zeabur.app/get_all?api_key=xxx&bin_name=mybin
-删除变量: https://your-app.zeabur.app/delete?api_key=xxx&bin_name=mybin&key=日期
+CloudVar - 云端变量存储 API
 """
 
 from flask import Flask, request, jsonify
@@ -16,7 +9,6 @@ import os
 
 app = Flask(__name__)
 
-# 内存缓存 bin_id（Zeabur 无状态，每次重启会清空，但会自动重新获取）
 BIN_CACHE = {}
 
 
@@ -24,17 +16,14 @@ def get_or_create_bin(api_key, bin_name):
     """获取或创建 bin"""
     cache_key = f"{api_key}:{bin_name}"
     
-    # 检查内存缓存
     if cache_key in BIN_CACHE:
         return BIN_CACHE[cache_key]
     
-    # 先尝试通过名称查找已存在的 bin
     bin_id = find_bin_by_name(api_key, bin_name)
     if bin_id:
         BIN_CACHE[cache_key] = bin_id
         return bin_id
     
-    # 创建新 bin
     url = "https://api.jsonbin.io/v3/b"
     headers = {
         "Content-Type": "application/json",
@@ -91,7 +80,6 @@ def save_data(api_key, bin_id, data):
 
 @app.route("/set", methods=["GET", "POST"])
 def set_variable():
-    """设置变量"""
     api_key = request.args.get("api_key")
     bin_name = request.args.get("bin_name")
     key = request.args.get("key")
@@ -104,7 +92,6 @@ def set_variable():
         }), 400
     
     try:
-        # 尝试解析 value 为 JSON
         try:
             value = json.loads(value)
         except:
@@ -132,7 +119,6 @@ def set_variable():
 
 @app.route("/get", methods=["GET"])
 def get_variable():
-    """获取变量"""
     api_key = request.args.get("api_key")
     bin_name = request.args.get("bin_name")
     key = request.args.get("key")
@@ -165,7 +151,6 @@ def get_variable():
 
 @app.route("/get_all", methods=["GET"])
 def get_all_variables():
-    """获取所有变量"""
     api_key = request.args.get("api_key")
     bin_name = request.args.get("bin_name")
     
@@ -191,7 +176,6 @@ def get_all_variables():
 
 @app.route("/delete", methods=["GET", "POST"])
 def delete_variable():
-    """删除变量"""
     api_key = request.args.get("api_key")
     bin_name = request.args.get("bin_name")
     key = request.args.get("key")
@@ -226,9 +210,8 @@ def delete_variable():
 
 @app.route("/", methods=["GET"])
 def index():
-    """API 使用说明"""
     return jsonify({
-        "name": "云端变量存储 API",
+        "name": "CloudVar - 云端变量存储 API",
         "endpoints": {
             "设置变量": "/set?api_key=xxx&bin_name=mybin&key=变量名&value=值",
             "获取变量": "/get?api_key=xxx&bin_name=mybin&key=变量名",
@@ -240,5 +223,5 @@ def index():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
