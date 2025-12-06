@@ -30,7 +30,7 @@ def get_or_create_bin(api_key, bin_name):
         "X-Master-Key": api_key,
         "X-Bin-Name": bin_name
     }
-    response = requests.post(url, json={}, headers=headers)
+    response = requests.post(url, json={"_init": True}, headers=headers)
     
     if response.status_code == 200:
         bin_id = response.json()["metadata"]["id"]
