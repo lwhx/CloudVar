@@ -8,11 +8,6 @@ Upstash 免费额度：每天 1 万次请求（约每月 30 万次）
 2. 创建 Redis 数据库
 3. 获取 UPSTASH_REDIS_REST_URL 和 UPSTASH_REDIS_REST_TOKEN
 
-本版本特点：
-- 所有 value 都当作「普通字符串」处理
-- 不会再自动 json.loads / json.dumps
-- 存什么就取什么，不会再出现 ['2025-12-06'] 这种情况
-"""
 
 from flask import Flask, request, jsonify
 import requests
